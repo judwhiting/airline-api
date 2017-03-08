@@ -1,5 +1,6 @@
 package com.cooksys.airline;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,8 +16,14 @@ import java.util.Map;
 @RestController
 public class AirlineAirportController {
 
-    public static final AirlineController airlineController = new AirlineController();
-    public static final AirportController airportController = new AirportController();
+    public final AirlineService airlineService;
+    public final AirportService airportService;
+
+    @Autowired
+    public AirlineAirportController(AirlineService airlineService, AirportService airportService) {
+        this.airlineService = airlineService;
+        this.airportService = airportService;
+    }
 
     @Value("${eureka.instance.metadataMap.version:default}")
     private String versionMetadata;
@@ -24,7 +31,7 @@ public class AirlineAirportController {
     @RequestMapping("/airports")
     public Map<String, Object> airportInfo() {
         final Map<String, Object> responseBody = new HashMap<>();
-        List<AirportInfo> airportInfoList = airportController.getAirports();
+        List<AirportInfo> airportInfoList = airportService.getAirports();
 
         responseBody.put("version", versionMetadata);
         responseBody.put("airports", airportInfoList);
@@ -34,7 +41,7 @@ public class AirlineAirportController {
     @RequestMapping("/airports/{airportId}")
     public Map<String, Object> airportInfo(@PathVariable(value = "airportId") long id) {
         final Map<String, Object> responseBody = new HashMap<>();
-        AirportInfo airportInfo = airportController.getAirportById(id);
+        AirportInfo airportInfo = airportService.getAirportById(id);
 
         responseBody.put("version", versionMetadata);
         responseBody.put("airports", airportInfo);
@@ -44,7 +51,7 @@ public class AirlineAirportController {
     @RequestMapping("/airlines")
     public Map<String, Object> airlineInfo() {
         final Map<String, Object> responseBody = new HashMap<>();
-        List<AirlineInfo> airlineInfoList = airlineController.getAirlines();
+        List<AirlineInfo> airlineInfoList = airlineService.getAirlines();
 
         responseBody.put("version", versionMetadata);
         responseBody.put("airlines", airlineInfoList);
@@ -54,7 +61,7 @@ public class AirlineAirportController {
     @RequestMapping("/airlines/{airlineId}")
     public Map<String, Object> airlineInfo(@PathVariable(value = "airlineId") long id) {
         final Map<String, Object> responseBody = new HashMap<>();
-        AirlineInfo airlineInfo = airlineController.getAirlineById(id);
+        AirlineInfo airlineInfo = airlineService.getAirlineById(id);
 
         responseBody.put("version", versionMetadata);
         responseBody.put("airlines", airlineInfo);
