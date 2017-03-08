@@ -1,5 +1,8 @@
 package com.cooksys.airline;
 
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,14 +14,16 @@ import java.util.Map;
 /**
  * Created by justin on 3/8/17.
  */
-public class AirlineController {
+@Component
+public class AirlineService {
 
     private static Map<Long, AirlineInfo> airlineInfoMap;
 
-    public AirlineController() {
+    @PostConstruct
+    public void init() {
         airlineInfoMap = new HashMap<>();
         try {
-            String[] lines = Files.readAllLines(new File("src/data/airlines.dat").toPath()).toArray(new String[0]);
+            String[] lines = Files.readAllLines(new File("src/main/resources/airlines.dat").toPath()).toArray(new String[0]);
             for(String line : lines) {
                 line = line.replaceAll("[\"]", "");
                 AirlineInfo airlineInfo = populateAirlineData(line);

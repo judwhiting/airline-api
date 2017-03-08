@@ -11,14 +11,14 @@ import java.util.Map;
 /**
  * Created by justin on 3/8/17.
  */
-public class AirportController {
+public class AirportService {
 
     private static Map<Long, AirportInfo> airportInfoMap;
 
-    public AirportController() {
+    public void init() {
         airportInfoMap = new HashMap<>();
         try {
-            String[] lines = Files.readAllLines(new File("src/data/airports.dat").toPath()).toArray(new String[0]);
+            String[] lines = Files.readAllLines(new File("src/main/resources/airports.dat").toPath()).toArray(new String[0]);
             for(String line: lines) {
                 line = line.replaceAll("[\"]", "");
                 AirportInfo airportInfo = populateAirportInfo(line);
