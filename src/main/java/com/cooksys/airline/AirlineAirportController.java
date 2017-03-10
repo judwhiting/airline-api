@@ -38,10 +38,40 @@ public class AirlineAirportController {
         return responseBody;
     }
 
-    @RequestMapping("/airports/{airportId}")
-    public Map<String, Object> airportInfo(@PathVariable(value = "airportId") long id) {
+    @RequestMapping("/airports/countries/{airportCountry}")
+    public Map<String, Object> airportInfoByCountry(@PathVariable(value = "airportCountry") String country) {
         final Map<String, Object> responseBody = new HashMap<>();
-        AirportInfo airportInfo = airportService.getAirportById(id);
+        List<AirportInfo> airportInfoList = airportService.getAirportsByCountry(country);
+
+        responseBody.put("version", versionMetadata);
+        responseBody.put("airports", airportInfoList);
+        return responseBody;
+    }
+
+    @RequestMapping("/airports/cities/{airportCity}")
+    public Map<String, Object> airportInfoByCity(@PathVariable(value = "airportCity") String city) {
+        final Map<String, Object> responseBody = new HashMap<>();
+        List<AirportInfo> airportInfoList = airportService.getAirportsByCity(city);
+
+        responseBody.put("version", versionMetadata);
+        responseBody.put("airports", airportInfoList);
+        return responseBody;
+    }
+
+    @RequestMapping("/airports/iata/{airportIata}")
+    public Map<String, Object> airportInfoByIata(@PathVariable(value = "airportIata") String iata) {
+        final Map<String, Object> responseBody = new HashMap<>();
+        AirportInfo airportInfo = airportService.getAirportByIata(iata);
+
+        responseBody.put("version", versionMetadata);
+        responseBody.put("airports", airportInfo);
+        return responseBody;
+    }
+
+    @RequestMapping("/airports/icao/{airportIcao}")
+    public Map<String, Object> airportInfoByIcao(@PathVariable(value = "airportIcao") String icao) {
+        final Map<String, Object> responseBody = new HashMap<>();
+        AirportInfo airportInfo = airportService.getAirportByIcao(icao);
 
         responseBody.put("version", versionMetadata);
         responseBody.put("airports", airportInfo);
@@ -58,10 +88,30 @@ public class AirlineAirportController {
         return responseBody;
     }
 
-    @RequestMapping("/airlines/{airlineId}")
-    public Map<String, Object> airlineInfo(@PathVariable(value = "airlineId") long id) {
+    @RequestMapping("/airlines/countries/{airlineCountry}")
+    public Map<String, Object> airlineInfoByCountry(@PathVariable(value = "airlineCountry") String country) {
         final Map<String, Object> responseBody = new HashMap<>();
-        AirlineInfo airlineInfo = airlineService.getAirlineById(id);
+        List<AirlineInfo> airlineInfoList = airlineService.getAirlinesByCountry(country);
+
+        responseBody.put("version", versionMetadata);
+        responseBody.put("airports", airlineInfoList);
+        return responseBody;
+    }
+
+    @RequestMapping("/airlines/iata/{airlineIata}")
+    public Map<String, Object> airlineInfoByIata(@PathVariable(value = "airlineIata") String iata) {
+        final Map<String, Object> responseBody = new HashMap<>();
+        AirlineInfo airlineInfo = airlineService.getAirlineByIata(iata);
+
+        responseBody.put("version", versionMetadata);
+        responseBody.put("airlines", airlineInfo);
+        return responseBody;
+    }
+
+    @RequestMapping("/airlines/icao/{airlineIcao}")
+    public Map<String, Object> airlineInfoByIcao(@PathVariable(value = "airlineIcao") String icao) {
+        final Map<String, Object> responseBody = new HashMap<>();
+        AirlineInfo airlineInfo = airlineService.getAirlineByIcao(icao);
 
         responseBody.put("version", versionMetadata);
         responseBody.put("airlines", airlineInfo);

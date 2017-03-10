@@ -3,26 +3,30 @@ package com.cooksys.airline;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by justin on 3/8/17.
  */
 public class AirportService {
 
-    private static Map<Long, AirportInfo> airportInfoMap;
+    private static Map<Long, AirportInfo> airportInfoMapById;
+    private static Map<String, AirportInfo> airportInfoMapByIata;
+    private static Map<String, AirportInfo> airportInfoMapByIcao;
 
     public void init() {
-        airportInfoMap = new HashMap<>();
+        airportInfoMapById = new HashMap<>();
+        airportInfoMapByIata = new HashMap<>();
+        airportInfoMapByIcao = new HashMap<>();
+        Set<String> set = new HashSet<>();
         try {
             String[] lines = Files.readAllLines(new File("src/main/resources/airports.dat").toPath()).toArray(new String[0]);
             for(String line: lines) {
                 line = line.replaceAll("[\"]", "");
                 AirportInfo airportInfo = populateAirportInfo(line);
-                airportInfoMap.put(airportInfo.getAirportId(), airportInfo);
+                airportInfoMapById.put(airportInfo.getAirportId(), airportInfo);
+                airportInfoMapByIata.put(airportInfo.getIata(), airportInfo);
+                airportInfoMapByIcao.put(airportInfo.getIcao(), airportInfo);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -50,10 +54,48 @@ public class AirportService {
     }
 
     public AirportInfo getAirportById(long id) {
-        return airportInfoMap.get(id);
+        return airportInfoMapById.get(id);
+    }
+
+    public AirportInfo getAirportByIata(String iata) {
+        iata = iata.toUpperCase();
+        return airportInfoMapByIata.get(iata);
+    }
+
+    public AirportInfo getAirportByIcao(String icao) {
+        icao = icao.toUpperCase();
+        return airportInfoMapByIcao.get(icao);
     }
 
     public List<AirportInfo> getAirports() {
-        return new ArrayList(airportInfoMap.values());
+        return new ArrayList(airportInfoMapById.values());
+    }
+
+    public List<AirportInfo> getAirportsByCountry(String country) {
+        List<AirportInfo> airportInfoList = new ArrayList<>();
+        if(country == null) {
+            return airportInfoList;
+        }
+        country = country.replaceAll("[_-]", " ");
+        for(AirportInfo airportInfo : airportInfoMapById.values()) {
+            if(country.equalsIgnoreCase(airportInfo.getCountry())) {
+                airportInfoList.add(airportInfo);
+            }
+        }
+        return airportInfoList;
+    }
+
+    public List<AirportInfo> getAirportsByCity(String city) {
+        List<AirportInfo> airportInfoList = new ArrayList<>();
+        if(city == null) {
+            return airportInfoList;
+        }
+        city = city.replaceAll("[_-]", " ");
+        for(AirportInfo airportInfo : airportInfoMapById.values()) {
+            if(city.equalsIgnoreCase(airportInfo.getCity())) {
+                airportInfoList.add(airportInfo);
+            }
+        }
+        return airportInfoList;
     }
 }

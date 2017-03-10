@@ -6,10 +6,7 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by justin on 3/8/17.
@@ -17,17 +14,23 @@ import java.util.Map;
 @Component
 public class AirlineService {
 
-    private static Map<Long, AirlineInfo> airlineInfoMap;
+    private static Map<Long, AirlineInfo> airlineInfoMapById;
+    private static Map<String, AirlineInfo> airlineInfoMapByIata;
+    private static Map<String, AirlineInfo> airlineInfoMapByIcao;
 
     @PostConstruct
     public void init() {
-        airlineInfoMap = new HashMap<>();
+        airlineInfoMapById = new HashMap<>();
+        airlineInfoMapByIata = new HashMap<>();
+        airlineInfoMapByIcao = new HashMap<>();
         try {
             String[] lines = Files.readAllLines(new File("src/main/resources/airlines.dat").toPath()).toArray(new String[0]);
             for(String line : lines) {
                 line = line.replaceAll("[\"]", "");
                 AirlineInfo airlineInfo = populateAirlineData(line);
-                airlineInfoMap.put(airlineInfo.getAirlineId(), airlineInfo);
+                airlineInfoMapById.put(airlineInfo.getAirlineId(), airlineInfo);
+                airlineInfoMapByIata.put(airlineInfo.getIata(), airlineInfo);
+                airlineInfoMapByIcao.put(airlineInfo.getIcao(), airlineInfo);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -49,10 +52,34 @@ public class AirlineService {
     }
 
     public AirlineInfo getAirlineById(long id) {
-        return airlineInfoMap.get(id);
+        return airlineInfoMapById.get(id);
+    }
+
+    public AirlineInfo getAirlineByIata(String iata) {
+        iata = iata.toUpperCase();
+        return airlineInfoMapByIata.get(iata);
+    }
+
+    public AirlineInfo getAirlineByIcao(String icao) {
+        icao = icao.toUpperCase();
+        return airlineInfoMapByIcao.get(icao);
     }
 
     public List<AirlineInfo> getAirlines() {
-        return new ArrayList(airlineInfoMap.values());
+        return new ArrayList(airlineInfoMapById.values());
+    }
+
+    public List<AirlineInfo> getAirlinesByCountry(String country) {
+        List<AirlineInfo> airlineInfoList = new ArrayList<>();
+        if(country == null) {
+            return airlineInfoList;
+        }
+        country = country.replaceAll("[_-]", " ");
+        for(AirlineInfo airlineInfo : airlineInfoMapById.values()) {
+            if(country.equalsIgnoreCase(airlineInfo.getCountry())) {
+                airlineInfoList.add(airlineInfo);
+            }
+        }
+        return airlineInfoList;
     }
 }
